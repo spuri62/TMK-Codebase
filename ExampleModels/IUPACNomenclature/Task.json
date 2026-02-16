@@ -1,0 +1,90 @@
+{
+  "model": "Task",
+  "tasks": [
+    {
+      "name": "CreateSystematicName",
+      "description": "Generate a Preferred IUPAC Name (PIN) or systematic name for an organic compound using substitutive nomenclature.",
+      "inputParameters": [
+        "initialConfiguration: configuration",
+        "knowledgeBase: knowledgeBase"
+      ],
+      "outputParameters": [
+        "finalConfiguration: configuration"
+      ],
+      "given": "validChemicalStructure(initialConfiguration)",
+      "makes": "validSystematicName(finalConfiguration)",
+      "means": [
+        {
+          "mechanismReference": "SystematicNamingSolution",
+          "actualArguments": [
+            "initialConfiguration",
+            "finalConfiguration"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "DeterminePrincipalCharacteristicGroup",
+      "description": "Step (a): Determine the principal characteristic group to be cited as the suffix based on seniority.",
+      "inputParameters": ["config: configuration"],
+      "outputParameters": ["config: configuration"],
+      "given": "hasCharacteristicGroups(config)",
+      "makes": "principalGroupIdentified(config)",
+      "means": [{ "mechanismReference": "PrincipalGroupMechanism", "actualArguments": ["config"] }]
+    },
+    {
+      "name": "DetermineSeniorParent",
+      "description": "Step (b): Determine the senior parent amongst structural components attached to the principal characteristic group.",
+      "inputParameters": ["config: configuration"],
+      "outputParameters": ["config: configuration"],
+      "given": "principalGroupIdentified(config)",
+      "makes": "seniorParentIdentified(config)",
+      "means": [{ "mechanismReference": "SeniorParentMechanism", "actualArguments": ["config"] }]
+    },
+    {
+      "name": "NameParentHydrideAndUnsaturation",
+      "description": "Step (c): Name the parent hydride and specify any unsaturation (ene/yne endings).",
+      "inputParameters": ["config: configuration"],
+      "outputParameters": ["config: configuration"],
+      "given": "seniorParentIdentified(config)",
+      "makes": "parentNamed(config)",
+      "means": [{ "mechanismReference": "ParentNamingMechanism", "actualArguments": ["config"] }]
+    },
+    {
+      "name": "ConstructSubstituentsAndLocants",
+      "description": "Steps (d-f): Combine parent with suffix, identify substituents (prefixes), insert multiplicative prefixes, and determine numbering/locants.",
+      "inputParameters": ["config: configuration"],
+      "outputParameters": ["config: configuration"],
+      "given": "parentNamed(config)",
+      "makes": "substituentsAndLocantsAssigned(config)",
+      "means": [{ "mechanismReference": "SubstituentLocantMechanism", "actualArguments": ["config"] }]
+    },
+    {
+      "name": "AddStereodescriptors",
+      "description": "Step (g): Determine chirality centres and other stereogenic units and add stereodescriptors.",
+      "inputParameters": ["config: configuration"],
+      "outputParameters": ["config: configuration"],
+      "given": "substituentsAndLocantsAssigned(config)",
+      "makes": "stereochemistryAssigned(config)",
+      "means": [{ "mechanismReference": "StereochemistryMechanism", "actualArguments": ["config"] }]
+    },
+    {
+      "name": "FailureGoal",
+      "description": "Handle naming failure.",
+      "inputParameters": [],
+      "outputParameters": [],
+      "given": "true",
+      "makes": "failed(configuration)",
+      "means": []
+    },
+    {
+      "name": "CompleteGoal",
+      "description": "Finalize naming process.",
+      "inputParameters": [],
+      "outputParameters": [],
+      "given": "true",
+      "makes": "completed(configuration)",
+      "means": []
+    }
+  ]
+}

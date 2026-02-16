@@ -1,0 +1,159 @@
+{
+  "model": "Knowledge",
+  "concepts": [
+    {
+      "name": "configuration",
+      "description": "The state of the naming process, containing the chemical structure and the building name string."
+    },
+    {
+      "name": "chemicalStructure",
+      "description": "A representation of the organic molecule including atoms, bonds, and stereochemistry."
+    },
+    {
+      "name": "systematicName",
+      "description": "The Preferred IUPAC Name (PIN) constructed by the process."
+    },
+    {
+      "name": "characteristicGroup",
+      "description": "Functional groups attached to the parent compound."
+    },
+    {
+      "name": "principalCharacteristicGroup",
+      "description": "The most senior characteristic group cited as a suffix."
+    },
+    {
+      "name": "parentCompound",
+      "description": "The parent hydride (chain or ring) derived from the senior element and structure."
+    },
+    {
+      "name": "substituent",
+      "description": "Groups cited as prefixes."
+    },
+    {
+      "name": "locant",
+      "description": "Numbers or letters specifying position on the parent structure."
+    },
+    {
+      "name": "stereodescriptor",
+      "description": "Descriptors such as R, S, E, Z, cis, trans used to specify configuration."
+    },
+    {
+      "name": "multiplicativePrefix",
+      "description": "Prefixes like di, tri, tetra used when fragments occur multiple times."
+    }
+  ],
+  "instances": [
+    {
+      "name": "initialConfiguration",
+      "concept": "configuration"
+    },
+    {
+      "name": "finalConfiguration",
+      "concept": "configuration"
+    },
+    {
+      "name": "Table1_Example_Structure",
+      "concept": "chemicalStructure"
+    },
+    {
+      "name": "Table1_Example_Name",
+      "concept": "systematicName"
+    },
+    {
+      "name": "ketone",
+      "concept": "characteristicGroup"
+    },
+    {
+      "name": "alkene",
+      "concept": "characteristicGroup"
+    },
+    {
+      "name": "chloro",
+      "concept": "substituent"
+    },
+    {
+      "name": "heptane",
+      "concept": "parentCompound"
+    },
+    {
+      "name": "one",
+      "concept": "principalCharacteristicGroup"
+    },
+    {
+      "name": "en",
+      "concept": "substituent"
+    },
+    {
+      "name": "di",
+      "concept": "multiplicativePrefix"
+    },
+    {
+      "name": "E",
+      "concept": "stereodescriptor"
+    },
+    {
+      "name": "S",
+      "concept": "stereodescriptor"
+    }
+  ],
+  "relations": [
+    {
+      "name": "isSeniorTo",
+      "domain": "characteristicGroup",
+      "range": "characteristicGroup"
+    },
+    {
+      "name": "isAttachedTo",
+      "domain": "substituent",
+      "range": "parentCompound"
+    },
+    {
+      "name": "hasLocant",
+      "domain": "substituent",
+      "range": "locant"
+    },
+    {
+      "name": "hasSuffix",
+      "domain": "parentCompound",
+      "range": "principalCharacteristicGroup"
+    }
+  ],
+  "triples": [
+    {
+      "instance1": "ketone",
+      "relation": "isSeniorTo",
+      "instance2": "alkene"
+    },
+    {
+      "instance1": "Table1_Example_Name",
+      "relation": "isAttachedTo",
+      "instance2": "Table1_Example_Structure"
+    }
+  ],
+  "assertions": [
+    {
+      "name": "validSystematicName",
+      "description": "Asserts that the configuration contains a valid IUPAC Systematic Name.",
+      "property": "isCorrectlyNamed",
+      "equivalentTo": "SystematicNamingSolution"
+    },
+    {
+      "name": "principalGroupIdentified",
+      "description": "Asserts that the principal characteristic group has been selected.",
+      "property": "hasSuffix",
+      "equivalentTo": "PrincipalGroupMechanism"
+    },
+    {
+      "name": "seniorParentIdentified",
+      "description": "Asserts that the senior parent hydride has been determined.",
+      "property": "hasParent",
+      "equivalentTo": "SeniorParentMechanism"
+    },
+    {
+      "name": "SNS",
+      "description": "Abbreviation for SystematicNamingSolution",
+      "property": "SystematicNamingSolution",
+      "equivalentTo": "SystematicNamingSolution"
+    }
+  ]
+}
