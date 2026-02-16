@@ -3,7 +3,7 @@
   "methods": [
     {
       "name": "SystematicNamingSolution",
-      "description": "The main algorithm for creating systematic names as defined in Section 3 of the IUPAC Guide.",
+      "description": "The main algorithm for creating systematic IUPAC names.",
       "inputParameters": ["initialConfig", "finalConfig"],
       "outputParameters": ["finalConfig"],
       "requires": "validChemicalStructure(initialConfig)",
@@ -13,126 +13,65 @@
         "successState": "SNS_Done",
         "failureState": "SNS_Fail",
         "states": [
-          {
-            "name": "SNS_S0",
-            "goalInvocation": {
-              "goalReference": "DeterminePrincipalCharacteristicGroup",
-              "type": "task",
-              "actualArguments": ["initialConfig"]
-            }
-          },
-          {
-            "name": "SNS_S1",
-            "goalInvocation": {
-              "goalReference": "DetermineSeniorParent",
-              "type": "task",
-              "actualArguments": ["initialConfig"]
-            }
-          },
-          {
-            "name": "SNS_S2",
-            "goalInvocation": {
-              "goalReference": "NameParentHydrideAndUnsaturation",
-              "type": "task",
-              "actualArguments": ["initialConfig"]
-            }
-          },
-          {
-            "name": "SNS_S3",
-            "goalInvocation": {
-              "goalReference": "ConstructSubstituentsAndLocants",
-              "type": "task",
-              "actualArguments": ["initialConfig"]
-            }
-          },
-          {
-            "name": "SNS_S4",
-            "goalInvocation": {
-              "goalReference": "AddStereodescriptors",
-              "type": "task",
-              "actualArguments": ["initialConfig"]
-            }
-          },
-          {
-            "name": "SNS_Done",
-            "goalInvocation": {
-              "goalReference": "CompleteGoal",
-              "type": "task",
-              "actualArguments": []
-            }
-          },
-          {
-            "name": "SNS_Fail",
-            "goalInvocation": {
-              "goalReference": "FailureGoal",
-              "type": "task",
-              "actualArguments": []
-            }
-          }
+          { "name": "SNS_S0", "goalInvocation": { "goalReference": "DeterminePrincipalCharacteristicGroup", "type": "task", "actualArguments": ["initialConfig"] } },
+          { "name": "SNS_S1", "goalInvocation": { "goalReference": "DetermineSeniorParent", "type": "task", "actualArguments": ["initialConfig"] } },
+          { "name": "SNS_S2", "goalInvocation": { "goalReference": "NameParentHydrideAndUnsaturation", "type": "task", "actualArguments": ["initialConfig"] } },
+          { "name": "SNS_S3", "goalInvocation": { "goalReference": "CombineParentWithSuffix", "type": "task", "actualArguments": ["initialConfig"] } },
+          { "name": "SNS_S4", "goalInvocation": { "goalReference": "IdentifySubstituentsAndLocants", "type": "task", "actualArguments": ["initialConfig"] } },
+          { "name": "SNS_S5", "goalInvocation": { "goalReference": "AddStereodescriptors", "type": "task", "actualArguments": ["initialConfig"] } },
+          { "name": "SNS_Done", "goalInvocation": { "goalReference": "CompleteGoal", "type": "task", "actualArguments": [] } },
+          { "name": "SNS_Fail", "goalInvocation": { "goalReference": "FailureGoal", "type": "task", "actualArguments": [] } }
         ],
         "transitions": [
-          { "sourceState": "SNS_S0", "targetState": "SNS_S1", "dataCondition": "principalGroupIdentified(initialConfig)" },
-          { "sourceState": "SNS_S0", "targetState": "SNS_Fail", "dataCondition": "!principalGroupIdentified(initialConfig)" },
+          { "sourceState": "SNS_S0", "targetState": "SNS_S1", "dataCondition": "principalGroupStepComplete(initialConfig)" },
+          { "sourceState": "SNS_S0", "targetState": "SNS_Fail", "dataCondition": "!principalGroupStepComplete(initialConfig)" },
           { "sourceState": "SNS_S1", "targetState": "SNS_S2", "dataCondition": "seniorParentIdentified(initialConfig)" },
           { "sourceState": "SNS_S1", "targetState": "SNS_Fail", "dataCondition": "!seniorParentIdentified(initialConfig)" },
-          { "sourceState": "SNS_S2", "targetState": "SNS_S3", "dataCondition": "parentNamed(initialConfig)" },
+          { "sourceState": "SNS_S2", "targetState": "SNS_S4", "dataCondition": "parentNamed(initialConfig)&& noGroupPresent(initialConfig)" },
+          { "sourceState": "SNS_S2", "targetState": "SNS_S3", "dataCondition": "parentNamed(initialConfig) && groupSelected(initialConfig)" },
           { "sourceState": "SNS_S2", "targetState": "SNS_Fail", "dataCondition": "!parentNamed(initialConfig)" },
-          { "sourceState": "SNS_S3", "targetState": "SNS_S4", "dataCondition": "substituentsAndLocantsAssigned(initialConfig)" },
-          { "sourceState": "SNS_S3", "targetState": "SNS_Fail", "dataCondition": "!substituentsAndLocantsAssigned(initialConfig)" },
-          { "sourceState": "SNS_S4", "targetState": "SNS_Done", "dataCondition": "stereochemistryAssigned(initialConfig)" },
-          { "sourceState": "SNS_S4", "targetState": "SNS_Fail", "dataCondition": "!stereochemistryAssigned(initialConfig)" }
+          { "sourceState": "SNS_S3", "targetState": "SNS_S4", "dataCondition": "parentAndSuffixCombined(initialConfig)" },
+          { "sourceState": "SNS_S3", "targetState": "SNS_Fail", "dataCondition": "!parentAndSuffixCombined(initialConfig)" },
+          { "sourceState": "SNS_S4", "targetState": "SNS_S5", "dataCondition": "substituentsAndLocantsAssigned(initialConfig)" },
+          { "sourceState": "SNS_S4", "targetState": "SNS_Fail", "dataCondition": "!substituentsAndLocantsAssigned(initialConfig)" },
+          { "sourceState": "SNS_S5", "targetState": "SNS_Done", "dataCondition": "stereochemistryAssigned(initialConfig)|| noStereoPresent(initialConfig)" },
+          { "sourceState": "SNS_S5", "targetState": "SNS_Fail", "dataCondition": "!(stereochemistryAssigned(initialConfig)|| noStereoPresent(initialConfig))" }
         ]
       }
     },
     {
       "name": "PrincipalGroupMechanism",
-      "description": "Selects the suffix group based on Table 3 Seniority Order.",
+      "description": "Selects the suffix group based on Seniority Order.",
       "inputParameters": ["config"],
       "outputParameters": ["config"],
-      "requires": "hasFunctionalGroups(config)",
-      "provides": "principalGroupIdentified(config)",
+      "requires": "validChemicalStructure(config)",
+      "provides": "principalGroupStepComplete(config)",
       "organizer": {
         "startState": "PGM_S0",
         "successState": "PGM_Done",
         "failureState": "PGM_Fail",
         "states": [
-          {
-            "name": "PGM_S0",
-            "goalInvocation": { "goalReference": "ApplyTable3Seniority", "type": "operation", "actualArguments": ["config"] }
-          },
-          {
-            "name": "PGM_Done",
-            "goalInvocation": { "goalReference": "CompleteGoal", "type": "task", "actualArguments": [] }
-          },
-          {
-            "name": "PGM_Fail",
-            "goalInvocation": { "goalReference": "FailureGoal", "type": "task", "actualArguments": [] }
-          }
+          { "name": "PGM_S0", "goalInvocation": { "goalReference": "ApplySeniority", "type": "operation", "actualArguments": ["config"] } },
+          { "name": "PGM_Done", "goalInvocation": { "goalReference": "CompleteGoal", "type": "task", "actualArguments": [] } },
+          { "name": "PGM_Fail", "goalInvocation": { "goalReference": "FailureGoal", "type": "task", "actualArguments": [] } }
         ],
         "transitions": [
-          { "sourceState": "PGM_S0", "targetState": "PGM_Done", "dataCondition": "groupSelected(config)" },
-          { "sourceState": "PGM_S0", "targetState": "PGM_Fail", "dataCondition": "!groupSelected(config)" }
+          { "sourceState": "PGM_S0", "targetState": "PGM_Done", "dataCondition": "groupSelected(config) || noGroupPresent(config)" },
+          { "sourceState": "PGM_S0", "targetState": "PGM_Fail", "dataCondition": "!(groupSelected(config) || noGroupPresent(config))" }
         ]
       }
     },
     {
-      "name": "ApplyTable3Seniority",
-      "description": "Atomic operation to compare groups against Table 3 (Carboxylates > Acids > Esters > ...).",
+      "name": "ApplySeniority",
+      "description": "Atomic operation to compare groups against Seniority (Carboxylates > Carboxylic acids > Esters > Acid halides > Amides > Nitriles > Aldehydes > Ketones > Alcohols > Thiols > Amines > Imines).",
       "inputParameters": ["config"],
       "outputParameters": ["config"],
       "requires": "true",
-      "provides": "groupSelected(config)",
-      "organizer": {
-        "startState": "Op_Start",
-        "successState": "Op_Done",
-        "failureState": "Op_Fail",
-        "states": [],
-        "transitions": []
-      }
+      "provides": "groupSelected(config) || noGroupPresent(config)"
     },
     {
       "name": "SeniorParentMechanism",
-      "description": "Selects parent based on Figure 1 criteria (Principal Group > Senior Element > Rings/Chains).",
+      "description": "Selects parent based on IUPAC criteria (Principal Group > Senior Element > Rings/Chains).",
       "inputParameters": ["config"],
       "outputParameters": ["config"],
       "requires": "true",
@@ -142,18 +81,9 @@
         "successState": "SPM_Done",
         "failureState": "SPM_Fail",
         "states": [
-          {
-            "name": "SPM_S0",
-            "goalInvocation": { "goalReference": "ApplyFigure1Criteria", "type": "operation", "actualArguments": ["config"] }
-          },
-          {
-            "name": "SPM_Done",
-            "goalInvocation": { "goalReference": "CompleteGoal", "type": "task", "actualArguments": [] }
-          },
-          {
-            "name": "SPM_Fail",
-            "goalInvocation": { "goalReference": "FailureGoal", "type": "task", "actualArguments": [] }
-          }
+          { "name": "SPM_S0", "goalInvocation": { "goalReference": "ApplyParentSelectionCriteria", "type": "operation", "actualArguments": ["config"] } },
+          { "name": "SPM_Done", "goalInvocation": { "goalReference": "CompleteGoal", "type": "task", "actualArguments": [] } },
+          { "name": "SPM_Fail", "goalInvocation": { "goalReference": "FailureGoal", "type": "task", "actualArguments": [] } }
         ],
         "transitions": [
           { "sourceState": "SPM_S0", "targetState": "SPM_Done", "dataCondition": "parentSelected(config)" },
@@ -162,19 +92,12 @@
       }
     },
     {
-      "name": "ApplyFigure1Criteria",
+      "name": "ApplyParentSelectionCriteria",
       "description": "Atomic operation applying the hierarchy: Max Principal Groups, Senior Element, Rings > Chains, etc.",
       "inputParameters": ["config"],
       "outputParameters": ["config"],
       "requires": "true",
-      "provides": "parentSelected(config)",
-      "organizer": {
-        "startState": "Op_Start",
-        "successState": "Op_Done",
-        "failureState": "Op_Fail",
-        "states": [],
-        "transitions": []
-      }
+      "provides": "parentSelected(config)"
     },
     {
       "name": "ParentNamingMechanism",
@@ -188,22 +111,10 @@
         "successState": "PNM_Done",
         "failureState": "PNM_Fail",
         "states": [
-          {
-            "name": "PNM_S0",
-            "goalInvocation": { "goalReference": "NameHydrideChainOrRing", "type": "operation", "actualArguments": ["config"] }
-          },
-          {
-            "name": "PNM_S1",
-            "goalInvocation": { "goalReference": "SpecifyUnsaturation", "type": "operation", "actualArguments": ["config"] }
-          },
-          {
-            "name": "PNM_Done",
-            "goalInvocation": { "goalReference": "CompleteGoal", "type": "task", "actualArguments": [] }
-          },
-          {
-            "name": "PNM_Fail",
-            "goalInvocation": { "goalReference": "FailureGoal", "type": "task", "actualArguments": [] }
-          }
+          { "name": "PNM_S0", "goalInvocation": { "goalReference": "NameHydrideChainOrRing", "type": "operation", "actualArguments": ["config"] } },
+          { "name": "PNM_S1", "goalInvocation": { "goalReference": "SpecifyUnsaturation", "type": "operation", "actualArguments": ["config"] } },
+          { "name": "PNM_Done", "goalInvocation": { "goalReference": "CompleteGoal", "type": "task", "actualArguments": [] } },
+          { "name": "PNM_Fail", "goalInvocation": { "goalReference": "FailureGoal", "type": "task", "actualArguments": [] } }
         ],
         "transitions": [
           { "sourceState": "PNM_S0", "targetState": "PNM_S1", "dataCondition": "hydrideNamed(config)" },
@@ -214,56 +125,80 @@
       }
     },
     {
+      "name": "NameHydrideChainOrRing",
+      "description": "Atomic operation to assign the base name of the senior parent hydride (e.g., 'heptane', 'cyclohexane') based on the number of skeletal atoms and senior elements.",
+      "inputParameters": ["config"],
+      "outputParameters": ["config"],
+      "requires": "seniorParentIdentified(config)",
+      "provides": "hydrideNamed(config)"
+    },
+    {
+      "name": "SpecifyUnsaturation",
+      "description": "Atomic operation to identify double and triple bonds and modify the parent hydride name with 'en' or 'yn' endings and locants.",
+      "inputParameters": ["config"],
+      "outputParameters": ["config"],
+      "requires": "hydrideNamed(config)",
+      "provides": "unsaturationSpecified(config)"
+    },
+    {
+      "name": "SuffixCombinationMechanism",
+      "description": "Decomposes Task (d): Joining the parent hydride name with the principal group suffix.",
+      "inputParameters": ["config"],
+      "outputParameters": ["config"],
+      "requires": "parentNamed(config)",
+      "provides": "parentAndSuffixCombined(config)",
+      "organizer": {
+        "startState": "SCM_S0",
+        "successState": "SCM_Done",
+        "failureState": "SCM_Fail",
+        "states": [
+          { "name": "SCM_S0", "goalInvocation": { "goalReference": "ApplySuffixRules", "type": "operation", "actualArguments": ["config"] } },
+          { "name": "SCM_Done", "goalInvocation": { "goalReference": "CompleteGoal", "type": "task", "actualArguments": [] } },
+          { "name": "SCM_Fail", "goalInvocation": { "goalReference": "FailureGoal", "type": "task", "actualArguments": [] } }
+        ],
+        "transitions": [
+          { "sourceState": "SCM_S0", "targetState": "SCM_Done", "dataCondition": "parentAndSuffixCombined(config)" },
+          { "sourceState": "SCM_S0", "targetState": "SCM_Fail", "dataCondition": "!parentAndSuffixCombined(config)" }
+        ]
+      }
+    },
+    {
+      "name": "ApplySuffixRules",
+      "description": "Atomic operation to join the principal characteristic group suffix to the parent name, applying elision rules (e.g., removing 'e' before 'ol', 'one', or 'oic acid').",
+      "inputParameters": ["config"],
+      "outputParameters": ["config"],
+      "requires": "parentNamed(config)",
+      "provides": "parentAndSuffixCombined(config)"
+    },
+    {
       "name": "SubstituentLocantMechanism",
       "description": "Identifies substituents, arranges alphabetically, inserts multiplicative prefixes, and assigns locants.",
       "inputParameters": ["config"],
       "outputParameters": ["config"],
-      "requires": "true",
+      "requires": "parentAndSuffixCombined(config) || parentNamed(config)",
       "provides": "substituentsAndLocantsAssigned(config)",
       "organizer": {
         "startState": "SLM_S0",
         "successState": "SLM_Done",
         "failureState": "SLM_Fail",
         "states": [
-          {
-            "name": "SLM_S0",
-            "goalInvocation": { "goalReference": "IdentifyAndOrderPrefixes", "type": "operation", "actualArguments": ["config"] }
-          },
-          {
-            "name": "SLM_S1",
-            "goalInvocation": { "goalReference": "ApplyNumberingRules", "type": "operation", "actualArguments": ["config"] }
-          },
-          {
-            "name": "SLM_Done",
-            "goalInvocation": { "goalReference": "CompleteGoal", "type": "task", "actualArguments": [] }
-          },
-          {
-            "name": "SLM_Fail",
-            "goalInvocation": { "goalReference": "FailureGoal", "type": "task", "actualArguments": [] }
-          }
+          { "name": "SLM_S0", "goalInvocation": { "goalReference": "ApplyNumberingRules", "type": "operation", "actualArguments": ["config"] } },
+          { "name": "SLM_Done", "goalInvocation": { "goalReference": "CompleteGoal", "type": "task", "actualArguments": [] } },
+          { "name": "SLM_Fail", "goalInvocation": { "goalReference": "FailureGoal", "type": "task", "actualArguments": [] } }
         ],
         "transitions": [
-          { "sourceState": "SLM_S0", "targetState": "SLM_S1", "dataCondition": "prefixesOrdered(config)" },
-          { "sourceState": "SLM_S0", "targetState": "SLM_Fail", "dataCondition": "!prefixesOrdered(config)" },
-          { "sourceState": "SLM_S1", "targetState": "SLM_Done", "dataCondition": "locantsAssigned(config)" },
-          { "sourceState": "SLM_S1", "targetState": "SLM_Fail", "dataCondition": "!locantsAssigned(config)" }
+          { "sourceState": "SLM_S0", "targetState": "SLM_Done", "dataCondition": "substituentsAndLocantsAssigned(config)" },
+          { "sourceState": "SLM_S0", "targetState": "SLM_Fail", "dataCondition": "!substituentsAndLocantsAssigned(config)" }
         ]
       }
     },
     {
       "name": "ApplyNumberingRules",
-      "description": "Atomic operation applying Section 7 Numbering Criteria (Heteroatoms > Indicated H > Principal Group > Unsaturation).",
+      "description": "Atomic operation applying Numbering Criteria (Heteroatoms > Indicated H > Principal Characteristic Group(s) > Unsaturation ('ene', 'yne') and 'hydro' prefixes > All Substituents Cited by Prefixes > Substituents in the Order of Citation).",
       "inputParameters": ["config"],
       "outputParameters": ["config"],
       "requires": "true",
-      "provides": "locantsAssigned(config)",
-      "organizer": {
-        "startState": "Op_Start",
-        "successState": "Op_Done",
-        "failureState": "Op_Fail",
-        "states": [],
-        "transitions": []
-      }
+      "provides": "substituentsAndLocantsAssigned(config)"
     },
     {
       "name": "StereochemistryMechanism",
@@ -271,28 +206,19 @@
       "inputParameters": ["config"],
       "outputParameters": ["config"],
       "requires": "true",
-      "provides": "stereochemistryAssigned(config)",
+      "provides": "stereochemistryAssigned(config) || noStereoPresent(config)",
       "organizer": {
-        "startState": "SCM_S0",
-        "successState": "SCM_Done",
-        "failureState": "SCM_Fail",
+        "startState": "STR_S0",
+        "successState": "STR_Done",
+        "failureState": "STR_Fail",
         "states": [
-          {
-            "name": "SCM_S0",
-            "goalInvocation": { "goalReference": "AssignStereodescriptors", "type": "operation", "actualArguments": ["config"] }
-          },
-          {
-            "name": "SCM_Done",
-            "goalInvocation": { "goalReference": "CompleteGoal", "type": "task", "actualArguments": [] }
-          },
-          {
-            "name": "SCM_Fail",
-            "goalInvocation": { "goalReference": "FailureGoal", "type": "task", "actualArguments": [] }
-          }
+          { "name": "STR_S0", "goalInvocation": { "goalReference": "AssignStereodescriptors", "type": "operation", "actualArguments": ["config"] } },
+          { "name": "STR_Done", "goalInvocation": { "goalReference": "CompleteGoal", "type": "task", "actualArguments": [] } },
+          { "name": "STR_Fail", "goalInvocation": { "goalReference": "FailureGoal", "type": "task", "actualArguments": [] } }
         ],
         "transitions": [
-          { "sourceState": "SCM_S0", "targetState": "SCM_Done", "dataCondition": "descriptorsAssigned(config)" },
-          { "sourceState": "SCM_S0", "targetState": "SCM_Fail", "dataCondition": "!descriptorsAssigned(config)" }
+          { "sourceState": "STR_S0", "targetState": "STR_Done", "dataCondition": "stereochemistryAssigned(config) || noStereoPresent(config)" },
+          { "sourceState": "STR_S0", "targetState": "STR_Fail", "dataCondition": "!(stereochemistryAssigned(config) || noStereoPresent(config))" }
         ]
       }
     },
@@ -302,14 +228,7 @@
       "inputParameters": ["config"],
       "outputParameters": ["config"],
       "requires": "true",
-      "provides": "descriptorsAssigned(config)",
-      "organizer": {
-        "startState": "Op_Start",
-        "successState": "Op_Done",
-        "failureState": "Op_Fail",
-        "states": [],
-        "transitions": []
-      }
+      "provides": "stereochemistryAssigned(config) || noStereoPresent(config)"
     }
   ]
 }

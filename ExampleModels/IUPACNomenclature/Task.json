@@ -4,32 +4,19 @@
     {
       "name": "CreateSystematicName",
       "description": "Generate a Preferred IUPAC Name (PIN) or systematic name for an organic compound using substitutive nomenclature.",
-      "inputParameters": [
-        "initialConfiguration: configuration",
-        "knowledgeBase: knowledgeBase"
-      ],
-      "outputParameters": [
-        "finalConfiguration: configuration"
-      ],
+      "inputParameters": ["initialConfiguration: configuration", "knowledgeBase: knowledgeBase"],
+      "outputParameters": ["finalConfiguration: configuration"],
       "given": "validChemicalStructure(initialConfiguration)",
       "makes": "validSystematicName(finalConfiguration)",
-      "means": [
-        {
-          "mechanismReference": "SystematicNamingSolution",
-          "actualArguments": [
-            "initialConfiguration",
-            "finalConfiguration"
-          ]
-        }
-      ]
+      "means": [{ "mechanismReference": "SystematicNamingSolution", "actualArguments": ["initialConfiguration", "finalConfiguration"] }]
     },
     {
       "name": "DeterminePrincipalCharacteristicGroup",
       "description": "Step (a): Determine the principal characteristic group to be cited as the suffix based on seniority.",
       "inputParameters": ["config: configuration"],
       "outputParameters": ["config: configuration"],
-      "given": "hasCharacteristicGroups(config)",
-      "makes": "principalGroupIdentified(config)",
+      "given": "validChemicalStructure(initialConfig)",
+      "makes": "principalGroupStepComplete(config)",
       "means": [{ "mechanismReference": "PrincipalGroupMechanism", "actualArguments": ["config"] }]
     },
     {
@@ -37,7 +24,7 @@
       "description": "Step (b): Determine the senior parent amongst structural components attached to the principal characteristic group.",
       "inputParameters": ["config: configuration"],
       "outputParameters": ["config: configuration"],
-      "given": "principalGroupIdentified(config)",
+      "given": "principalGroupStepComplete(config)",
       "makes": "seniorParentIdentified(config)",
       "means": [{ "mechanismReference": "SeniorParentMechanism", "actualArguments": ["config"] }]
     },
@@ -51,11 +38,20 @@
       "means": [{ "mechanismReference": "ParentNamingMechanism", "actualArguments": ["config"] }]
     },
     {
-      "name": "ConstructSubstituentsAndLocants",
-      "description": "Steps (d-f): Combine parent with suffix, identify substituents (prefixes), insert multiplicative prefixes, and determine numbering/locants.",
+      "name": "CombineParentWithSuffix",
+      "description": "Step (d): Combine the name of the parent hydride with the suffix for the principal characteristic group.",
       "inputParameters": ["config: configuration"],
       "outputParameters": ["config: configuration"],
       "given": "parentNamed(config)",
+      "makes": "parentAndSuffixCombined(config)",
+      "means": [{ "mechanismReference": "SuffixCombinationMechanism", "actualArguments": ["config"] }]
+    },
+    {
+      "name": "IdentifySubstituentsAndLocants",
+      "description": "Steps (e-f): Identify substituents, add multiplicative prefixes, and assign locants to the complete structure, arranging the prefixes in alphabetical order.",
+      "inputParameters": ["config: configuration"],
+      "outputParameters": ["config: configuration"],
+      "given": "parentAndSuffixCombined(config)",
       "makes": "substituentsAndLocantsAssigned(config)",
       "means": [{ "mechanismReference": "SubstituentLocantMechanism", "actualArguments": ["config"] }]
     },

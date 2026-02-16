@@ -40,6 +40,10 @@
     {
       "name": "multiplicativePrefix",
       "description": "Prefixes like di, tri, tetra used when fragments occur multiple times."
+    },
+    {
+      "name": "unsaturationEnding",
+      "description": "Endings such as 'en' or 'yn' denoting double or triple bonds."
     }
   ],
   "instances": [
@@ -50,14 +54,6 @@
     {
       "name": "finalConfiguration",
       "concept": "configuration"
-    },
-    {
-      "name": "Table1_Example_Structure",
-      "concept": "chemicalStructure"
-    },
-    {
-      "name": "Table1_Example_Name",
-      "concept": "systematicName"
     },
     {
       "name": "ketone",
@@ -81,7 +77,11 @@
     },
     {
       "name": "en",
-      "concept": "substituent"
+      "concept": "unsaturationEnding"
+    },
+    {
+      "name": "yn",
+      "concept": "unsaturationEnding"
     },
     {
       "name": "di",
@@ -103,6 +103,16 @@
       "range": "characteristicGroup"
     },
     {
+      "name": "isSeniorElementForParent",
+      "domain": "element",
+      "range": "element"
+    },
+    {
+      "name": "isSeniorElementForReplacement",
+      "domain": "element",
+      "range": "element"
+    },
+    {
       "name": "isAttachedTo",
       "domain": "substituent",
       "range": "parentCompound"
@@ -119,16 +129,34 @@
     }
   ],
   "triples": [
-    {
-      "instance1": "ketone",
-      "relation": "isSeniorTo",
-      "instance2": "alkene"
-    },
-    {
-      "instance1": "Table1_Example_Name",
-      "relation": "isAttachedTo",
-      "instance2": "Table1_Example_Structure"
-    }
+    { "instance1": "carboxylates", "relation": "isSeniorTo", "instance2": "carboxylic acids" },
+    { "instance1": "carboxylic acids", "relation": "isSeniorTo", "instance2": "esters" },
+    { "instance1": "esters", "relation": "isSeniorTo", "instance2": "acid halides" },
+    { "instance1": "acid halides", "relation": "isSeniorTo", "instance2": "amides" },
+    { "instance1": "amides", "relation": "isSeniorTo", "instance2": "nitriles" },
+    { "instance1": "nitriles", "relation": "isSeniorTo", "instance2": "aldehydes" },
+    { "instance1": "aldehydes", "relation": "isSeniorTo", "instance2": "ketones" },
+    { "instance1": "ketones", "relation": "isSeniorTo", "instance2": "alcohols" },
+    { "instance1": "alcohols", "relation": "isSeniorTo", "instance2": "thiols" },
+    { "instance1": "thiols", "relation": "isSeniorTo", "instance2": "amines" },
+    { "instance1": "amines", "relation": "isSeniorTo", "instance2": "imines" },
+
+    { "instance1": "N", "relation": "isSeniorElementForParent", "instance2": "P" },
+    { "instance1": "P", "relation": "isSeniorElementForParent", "instance2": "Si" },
+    { "instance1": "Si", "relation": "isSeniorElementForParent", "instance2": "B" },
+    { "instance1": "B", "relation": "isSeniorElementForParent", "instance2": "O" },
+    { "instance1": "O", "relation": "isSeniorElementForParent", "instance2": "S" },
+    { "instance1": "S", "relation": "isSeniorElementForParent", "instance2": "C" },
+    
+    { "instance1": "N", "relation": "isSeniorElementForReplacement", "instance2": "O" },
+    { "instance1": "O", "relation": "isSeniorElementForReplacement", "instance2": "S" },
+    { "instance1": "S", "relation": "isSeniorElementForReplacement", "instance2": "P" },
+    { "instance1": "P", "relation": "isSeniorElementForReplacement", "instance2": "Si" },
+    { "instance1": "Si", "relation": "isSeniorElementForReplacement", "instance2": "B" },
+
+    { "instance1": "rings", "relation": "isSeniorTo", "instance2": "chains" },
+    { "instance1": "heterocycles", "relation": "isSeniorTo", "instance2": "carbocycles" },
+    { "instance1": "polycycles", "relation": "isSeniorTo", "instance2": "monocycles" }
   ],
   "assertions": [
     {
@@ -138,8 +166,8 @@
       "equivalentTo": "SystematicNamingSolution"
     },
     {
-      "name": "principalGroupIdentified",
-      "description": "Asserts that the principal characteristic group has been selected.",
+      "name": "principalGroupStepComplete",
+      "description": "Asserts that the principal characteristic group has been selected. Can be null if a molecule has no characteristic group.",
       "property": "hasSuffix",
       "equivalentTo": "PrincipalGroupMechanism"
     },
@@ -148,6 +176,36 @@
       "description": "Asserts that the senior parent hydride has been determined.",
       "property": "hasParent",
       "equivalentTo": "SeniorParentMechanism"
+    },
+    {
+      "name": "hydrideNamed",
+      "description": "Asserts that the base name of the senior parent hydride (chain or ring) has been determined.",
+      "property": "hasParentName",
+      "equivalentTo": "NameHydrideChainOrRing"
+    },
+    {
+      "name": "unsaturationSpecified",
+      "description": "Asserts that double and triple bonds have been identified and the 'an' ending has been changed to 'en' or 'yn'.",
+      "property": "hasUnsaturation",
+      "equivalentTo": "SpecifyUnsaturation"
+    },
+    {
+      "name": "parentNamed",
+      "description": "Asserts that the parent hydride has been named and unsaturation (ene/yne) specified.",
+      "property": "hasParent",
+      "equivalentTo": "ParentNamingMechanism"
+    },
+    {
+      "name": "parentAndSuffixCombined",
+      "description": "Asserts that the name of hte parent hydride has been combined with the suffix for the principal characteristic group.",
+      "property": "hasParent",
+      "equivalentTo": "SuffixCombinationMechanism"
+    },
+    {
+      "name": "substituentsAndLocantsAssigned",
+      "description": "Asserts that the substituends, locants, multiplicative prefixes, and their ordering have been determined.",
+      "property": "isFullyLocated",
+      "equivalentTo": "SubstituentLocantMechanism"
     },
     {
       "name": "SNS",
