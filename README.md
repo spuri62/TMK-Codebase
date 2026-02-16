@@ -24,4 +24,5 @@ To generate a new model draft:
 
 * **ExampleModels/**: Contains the two primary examples discussed in the paper (Frames, IUPAC Nomenclature). We have included specific commits so viewers can use a 'diff' to compare the 'before' (raw LLM output) and 'after' (expert-refined) versions.
 * **EvaluationScripts/**: Contains the scripts used to calculate the semantic similarity results reported in the paper.
+* **SystemPrompt/**: Contains the system prompt provided to the TMK Modelling Gem.
 * **tmk-syntax-validator/**: The static web app to validate TMK models against the schemata.
