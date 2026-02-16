@@ -2,36 +2,46 @@
   "model": "Task",
   "tasks": [
     {
-      "name": "ClassifySituationWithFrame",
-      "description": "Top-level goal to classify a situation (e.g., a hotel room) using a frame structure.",
-      "inputParameters": ["initialConfiguration: configuration", "knowledgeBase: knowledgeBase"],
-      "outputParameters": ["finalConfiguration: configuration"],
+      "name": "AnswerUsingFrames",
+      "description": "Understand the meaning of a natural language sentence, including unstated, implied consequences to answer a question.",
+      "inputParameters": ["statement: string", "question: string"],
+      "outputParameters": ["answer: string"],
+      "given": "statement != null AND question != null",
+      "makes": "answers the question in a way that is consistent with the stated (explicit) and unstated (implicit) implications of the statement.",
       "means": [
-        { "mechanismReference": "HotelRoomSolution", "actualArguments": ["initialConfiguration"] }
+        {
+          "mechanismReference": "ReasonUsingFrames",
+          "actualArguments": ["statement", "question", "answer"]
+        }
       ]
     },
     {
-      "name": "IdentifyFrame",
-      "description": "Select the most appropriate frame based on initial cues.",
-      "inputParameters": ["percepts"],
-      "outputParameters": ["selectedFrame"],
-      "means": [{ "mechanismReference": "FrameSelectionMechanism", "actualArguments": ["percepts"] }]
+      "name": "AnalyseRPMCell",
+      "description": "Generate a frame-based model of the visual components and spatial relationships within a Raven's Progressive Matrices cell.",
+      "inputParameters": ["rpmCell: image"],
+      "outputParameters": ["representation: frameNetwork"],
+      "given": "rpmCell != null",
+      "makes": "representation reflects elements and spatial relations present in rpmCell",
+      "means": [
+        {
+          "mechanismReference": "ReasonUsingFrames",
+          "actualArguments": ["rpmCell", "representation"]
+        }
+      ]
     },
     {
-      "name": "FillSlots",
-      "description": "Assign fillers to the slots of the selected frame based on observation.",
-      "inputParameters": ["selectedFrame", "percepts"],
-      "outputParameters": ["instantiatedFrame"],
-      "means": [{ "mechanismReference": "SlotFillingMechanism", "actualArguments": ["selectedFrame", "percepts"] }]
-    },
-    {
-      "name": "VerifyFit",
-      "description": "Check if the filled frame satisfies the constraints of the stereotypical situation.",
-      "inputParameters": ["instantiatedFrame"],
-      "outputParameters": ["isMatch"],
-      "means": [{ "mechanismReference": "VerificationMechanism", "actualArguments": ["instantiatedFrame"] }]
-    },
-    { "name": "FailureGoal", "description": "Goal invoked if classification fails.", "inputParameters": [], "outputParameters": [], "means": [] },
-    { "name": "CompleteGoal", "description": "Goal invoked when classification is successful.", "inputParameters": [], "outputParameters": [], "means": [] }
+      "name": "UnderstandNewsStory",
+      "description": "Derive structured information from a free-form news article.",
+      "inputParameters": ["story: string"],
+      "outputParameters": ["facts: frameNetwork"],
+      "given": "story != null",
+      "makes": "facts extract the information conveyed in story",
+      "means": [
+        {
+          "mechanismReference": "ReasonUsingFrames",
+          "actualArguments": ["story", "facts"]
+        }
+      ]
+    }
   ]
 }

@@ -1,11 +1,20 @@
 {
   "model": "Knowledge",
   "concepts": [
-    { "name": "frame", "description": "A mental structure for representing a stereotypical situation." },
-    { "name": "slot", "description": "A component of a frame representing an attribute or relation." },
+    { "name": "frame", "description": "A mental structure for representing a stereotypical situation composed of slots and fillers." },
+    { "name": "slot", "description": "A component of a frame representing an attribute or relation, with a corresponding value (filler).", "properties": [
+      { "name": "name", "type": "string" },
+      { "name": "default", "type": "value" },
+      { "name": "proceduralAttachment", "type": "function" }
+    ] },
     { "name": "filler", "description": "A value or sub-frame that fits into a specific slot." },
     { "name": "percept", "description": "A piece of sensory information or data point from the environment." },
-    { "name": "configuration", "description": "The current state of slot-filler assignments in a frame." }
+    { "name": "configuration", "description": "The current state of slot-filler assignments in a frame." },
+    { "name": "frameNetwork", "description": "A network of frames linked by slot-filler (key-value) relations." },
+    { "name": "image", "description": "Visual input representing structured percepts, e.g. an RPM cell." },
+    { "name": "text", "description": "Unstructured natural language data." },
+    { "name": "shape", "description": "Geometric object in RPM problems", "properties": ["name", "type", "size", "fill", "inside", "above"] },
+    { "name": "newsStory", "description": "A representation of a news story documenting an event.", "properties": ["day", "location", "damage", "fatalities", "faultline", "magnitude", "time", "type", "duration"] }
   ],
   "instances": [
     { "name": "HotelRoomFrame", "concept": "frame" },
@@ -15,13 +24,48 @@
     { "name": "KingSizedBed", "concept": "filler" },
     { "name": "PrivateBath", "concept": "filler" },
     { "name": "initialConfiguration", "concept": "configuration" },
-    { "name": "finalConfiguration", "concept": "configuration" }
+    { "name": "finalConfiguration", "concept": "configuration" },
+    { "name": "ate1", "concept": "frame", "values": {
+        "slots": ["subject", "object", "location", "time", "object-alive"],
+        "fillers": ["Ashok", "a frog", "stomach", "?", "false"]
+      }
+    },
+    { "name": "shape-x", "concept": "shape", "values": {
+        "name": "x",
+        "type": "triangle",
+        "size": "large",
+        "fill": "false"
+      }
+    },
+    { "name": "shape-y", "concept": "shape", "values": {
+        "name": "y",
+        "type": "circle",
+        "size": "medium",
+        "fill": "false",
+        "inside": "shape-x"
+      }
+    },
+    { "name": "eq1", "concept": "newsStory", "values": {
+        "day": "today",
+        "location": "Lower Slabovia",
+        "damage": "$500M",
+        "fatalities": "25",
+        "faultline": "Sadie Hawkins",
+        "magnitude": "8.5",
+        "time": "afternoon",
+        "type": "earthquake",
+        "duration": "30s"
+      }
+    }
   ],
   "relations": [
     { "name": "hasSlot", "domain": "frame", "range": "slot" },
     { "name": "hasFiller", "domain": "slot", "range": "filler" },
+    { "name": "inheritsFrom", "domain": "frame", "range": "frame" },
     { "name": "matchesPercept", "domain": "filler", "range": "percept" },
-    { "name": "isComplete", "domain": "configuration", "range": "boolean" }
+    { "name": "isComplete", "domain": "configuration", "range": "boolean" },
+    { "name": "inside", "domain": "shape", "range": "shape" },
+    { "name": "above", "domain": "shape", "range": "shape" }
   ],
   "assertions": [
     {
