@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>JSON Schema Scorer</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- Our homegrown validator -->
+  <script type="module" src="src/validator.js"></script>
+</head>
+<body>
+  <h1>JSON Validator & Scorer</h1>
+
+  <p>Paste JSON below:</p>
+  <!-- Textbox for pasting -->
+  <textarea id="jsonInput" placeholder='{ "field": "value" }'></textarea>
+  
+  <!-- Controls corresponding to --CLI --flags -->
+  <div class="controls">
+    <!-- Detailed: Displays per-field scores in addition to per-file scores -->
+    <label><input type="checkbox" id="detailed"> Detailed</label>
+    <!-- Raw: Displays the raw JSON validation errors (just in case 'detailed' doesn't make sense) -->
+    <label><input type="checkbox" id="raw"> Raw</label>
+    <!-- Fix: Edits trivial issues (case mismatches) in the pasted JSON (mutates the textbox) -->
+    <label><input type="checkbox" id="fix"> Fix</label>
+    <button id="runBtn">Validate & Score</button>
+  </div>
+
+  <div id="output" class="result-box">Results will appear here...</div>
+</body>
+</html>
