@@ -22,9 +22,9 @@ To generate a new model draft:
 
 ### Repository Contents
 
-* **[ExampleModels/](https://github.com/DILab-Ivy/TMK-Codebase/tree/main/ExampleModels)**: Contains the two primary examples discussed in the paper (Frames, IUPAC Nomenclature). We have included specific commits so viewers can use a 'diff' to compare the 'before' (raw LLM output) and 'after' (expert-refined) versions.
-  * **[Frames lesson diff](https://github.com/DILab-Ivy/TMK-Codebase/commit/b9f4c09a5591b316649d56487b83110b27483cd1)**
-  * **[IUPAC Nomenclature lesson diff](https://github.com/DILab-Ivy/TMK-Codebase/commit/8317237e0ddd0b176beca2e228c34940357a7cb2)**
-* **[EvaluationScripts/](https://github.com/DILab-Ivy/TMK-Codebase/tree/main/EvaluationScripts/)**: Contains the scripts used to calculate the semantic similarity results reported in the paper.
-* **[SystemPrompt/](https://github.com/DILab-Ivy/TMK-Codebase/tree/main/SystemPrompt)**: Contains the system prompt provided to the TMK Modelling Gem.
-* **[tmk-syntax-validator/](https://github.com/DILab-Ivy/TMK-Codebase/tree/main/tmk-syntax-validator)**: The static web app to validate TMK models against the schemata.
+* **[ExampleModels/](https://github.com/spuri62/TMK-Codebase/tree/main/ExampleModels)**: Contains the two primary examples discussed in the paper (Frames, IUPAC Nomenclature). We have included specific commits so viewers can use a 'diff' to compare the 'before' (raw LLM output) and 'after' (expert-refined) versions.
+  * **[Frames lesson diff](https://github.com/spuri62/TMK-Codebase/commit/b9f4c09a5591b316649d56487b83110b27483cd1)**
+  * **[IUPAC Nomenclature lesson diff](https://github.com/spuri62/TMK-Codebase/commit/8317237e0ddd0b176beca2e228c34940357a7cb2)**
+* **[EvaluationScripts/](https://github.com/spuri62/TMK-Codebase/tree/main/EvaluationScripts)**: Contains the scripts used to calculate the semantic similarity results reported in the paper.
+* **[SystemPrompt/](https://github.com/spuri62/TMK-Codebase/tree/main/SystemPrompt)**: Contains the system prompt provided to the TMK Modelling Gem.
+* **[tmk-syntax-validator/](https://github.com/spuri62/TMK-Codebase/tree/main/tmk-syntax-validator)**: The static web app to validate TMK models against the schemata.
